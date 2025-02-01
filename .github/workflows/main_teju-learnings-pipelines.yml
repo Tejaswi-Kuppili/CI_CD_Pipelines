@@ -52,6 +52,21 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'Teju-Learnings-Pipelines'
-          slot-name: 'Production'
+          slot-name: 'stage'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4AC1BC5FA25C47D49A53092926DCD182 }}
           package: .
+
+  swap:
+      runs-on: windows-latest
+      needs: deploy
+      steps:
+        - name: Swap Staging to Production
+          uses: azure/CLI@v1
+          with:
+            azcliversion: latest
+            inlineScript: |
+              az webapp deployment slot swap \
+                --resource-group tejaswi.kuppili-ResourceGroup \
+                --name teju-learnings-pipelines \
+                --slot staging \
+                --target-slot production
